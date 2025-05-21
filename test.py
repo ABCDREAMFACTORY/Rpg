@@ -31,6 +31,7 @@ class Menu_game:
             for coins in self.list_coins:
                 coins.draw()
                 coins.collision(self.Player1)
+                coins.collision(self.Player2)
             if time.monotonic()-self.Player1.animage_time > self.Player1.animage_duree:
                 self.Player1.animage_index = (self.Player1.animage_index+1)%self.Player1.animage_nb_image
                 print(self.Player1.animage_index)
@@ -45,17 +46,21 @@ class Menu_game:
 
 
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_z] or keys[pygame.K_SPACE] or keys[pygame.K_UP]:
+            if keys[pygame.K_z] or keys[pygame.K_SPACE]:
                 self.Player1.jump()
-                self.Player2.jump()
-            if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            if keys[pygame.K_d]:
                 self.Player1.move_right()
-                self.Player2.move_left()
-            elif keys[pygame.K_q] or keys[pygame.K_LEFT]:
+            elif keys[pygame.K_q]:
                 self.Player1.move_left()
-                self.Player2.move_right()
             else:
                 self.Player1.stand()
+            if keys[pygame.K_UP]:
+                self.Player2.jump()
+            if keys[pygame.K_RIGHT]:
+                self.Player2.move_right()
+            elif keys[pygame.K_LEFT]:
+                self.Player2.move_left()
+            else:
                 self.Player2.stand()
             self.Player1.Gravity(self.ground,self.gravity)
             self.Player2.Gravity(self.ground,self.gravity)
@@ -65,6 +70,7 @@ class Menu_game:
             self.Player2.draw()
             self.clock.tick(60)  # limits FPS to 60
             pygame.display.update()
+
 class player():
     def __init__(self,screen):
         self.screen = screen
@@ -91,9 +97,12 @@ class player():
         self.on_ground = True
         self.player_vel_y = 0
     def draw(self):
+        #pygame.draw.rect(self.screen,"Black",self.rect)
+
         self.rect = self.player_frame[self.animage_index].get_rect()
         self.rect.center = self.co_x,self.co_y
         self.screen.blit(self.player_frame[self.animage_index],self.rect)
+
     def move_left(self):
         if self.co_x > self.player_frame[self.animage_index].get_width()/4:
             self.co_x -= self.speed
@@ -140,12 +149,23 @@ class coin:
         self.screen = screen
         self.x,self.y = x,y
         self.radius = radius
+
+        self.frames = extract_frames("assets/Coins.gif")
+        self.nbframes = len(self.frames)
+        self.gif_index = 1
     def draw(self):
-        pygame.draw.circle(self.screen,"yellow",(self.x,self.y),self.radius)
+        self.rect = self.frames[self.gif_index].get_rect()
+        self.rect.center = self.x,self.y
+        self.screen.blit(self.frames[self.gif_index],self.rect)
+
+        self.gif_index = (self.gif_index+1) % self.nbframes
+        if self.gif_index == 0:
+            self.gif_index = 1
 
     def collision(self,player):
         if player.rect.collidepoint(self.x,self.y):
             print("coin touché")
+            player.score +=1
             self.x,self.y = randint(0,self.screen.get_width()),500
 def extract_frames(path):
     with Image.open(path) as img:
