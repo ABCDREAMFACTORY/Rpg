@@ -14,9 +14,10 @@ class Menu_game:
         self.list_coins = [coin(screen,randint(0,self.screen.get_width()),500,30),coin(screen,randint(0,self.screen.get_width()),500,30)]
         pygame.display.set_caption("Jeu python")
         self.gravity = 0.5
-        self.ground = 600
+        self.ground = 500
         self.running = True
         self.action = None
+
     def handle_event(self,event):
         if event.type == pygame.QUIT:
             self.running = False
@@ -28,13 +29,8 @@ class Menu_game:
 
     def load(self):
             self.screen.blit(self.bg,(0,0))
-            for coins in self.list_coins:
-                coins.draw()
-                coins.collision(self.Player1)
-                coins.collision(self.Player2)
             if time.monotonic()-self.Player1.animage_time > self.Player1.animage_duree:
                 self.Player1.animage_index = (self.Player1.animage_index+1)%self.Player1.animage_nb_image
-                print(self.Player1.animage_index)
                 if self.Player1.animage_index == 0:
                     self.Player1.animage_index = 1
 
@@ -43,7 +39,10 @@ class Menu_game:
                     self.Player2.animage_index = 1
 
                 self.Player1.animage_time =  time.monotonic()
-
+            for coins in self.list_coins:
+                coins.draw()
+                coins.collision(self.Player1)
+                coins.collision(self.Player2)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_z] or keys[pygame.K_SPACE]:
@@ -77,7 +76,7 @@ class player():
         self.player_frame = extract_frames("assets/Stand.gif")
         self.player_frame = [pygame.transform.scale(frame,(200, 200)) for frame in self.player_frame]
         self.co_x = self.screen.get_width()/2
-        self.co_y = 600
+        self.co_y = 500
         self.rect = self.player_frame[1].get_rect()
         self.score = 0
         self.speed = 5
@@ -96,15 +95,16 @@ class player():
         self.jump_strength = -12
         self.on_ground = True
         self.player_vel_y = 0
+
     def draw(self):
-        #pygame.draw.rect(self.screen,"Black",self.rect)
 
-        self.rect = self.player_frame[self.animage_index].get_rect()
-        self.rect.center = self.co_x,self.co_y
-        self.screen.blit(self.player_frame[self.animage_index],self.rect)
 
+        self.rect = pygame.Rect(self.co_x,self.co_y,100,175)
+        self.rect.center = self.co_x+100,self.co_y+100
+        #pygame.draw.rect(self.screen,"White",self.rect)
+        self.screen.blit(self.player_frame[self.animage_index],pygame.Rect(self.co_x,self.co_y,100,175))
     def move_left(self):
-        if self.co_x > self.player_frame[self.animage_index].get_width()/4:
+        if self.co_x > self.rect.width:
             self.co_x -= self.speed
         if self.current_animation != "runAnimLeft":
             self.player_frame = extract_frames("assets/runAnim.gif")
@@ -113,8 +113,9 @@ class player():
             self.start_standing = True
             self.axis = "left"
             self.current_animation = "runAnimLeft"
+
     def move_right(self):
-        if self.co_x < self.screen.get_width()-self.player_frame[self.animage_index].get_width()/4:
+        if self.co_x < self.screen.get_width()-self.player_frame[self.animage_index].get_width():
             self.co_x += self.speed
         if self.current_animation != "runAnimRight":
             self.player_frame = extract_frames("assets/runAnim.gif")
@@ -122,6 +123,7 @@ class player():
             self.animage_nb_image = len(self.player_frame)
             self.axis = "right"
             self.current_animation = "runAnimRight"
+
     def stand(self):
         if self.current_animation != "Stand":
             self.player_frame = extract_frames("assets/Stand.gif")
@@ -130,12 +132,15 @@ class player():
             self.animage_nb_image = len(self.player_frame)
             self.animage_index  = 1
             self.current_animation = "Stand"
+
     def jump(self):
         if self.on_ground:
             self.player_vel_y = self.jump_strength
             self.on_ground = False
+
     def gain_score(self,how_much):
         self.score += how_much
+
     def Gravity(self,ground,gravity):
         if self.on_ground == False:
             self.player_vel_y += gravity
@@ -144,6 +149,7 @@ class player():
             self.co_y = ground
             self.player_vel_y = 0
             self.on_ground = True
+
 class coin:
     def __init__(self,screen,x,y,radius):
         self.screen = screen

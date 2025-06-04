@@ -1,4 +1,5 @@
 from button import Button
+from PIL import Image
 import pygame
 class Menu:
     def __init__(self, screen,font,SCREEN_WIDTH,SCREEN_HEIGHT):
@@ -8,6 +9,8 @@ class Menu:
         self.button_play_lan = Button(screen, SCREEN_WIDTH / 2 - SCREEN_WIDTH / 10, SCREEN_HEIGHT * 0.4, SCREEN_WIDTH / 5, SCREEN_HEIGHT / 15, "white", "Multijoueur", (0, 0, 0), 20)
         self.button_option = Button(screen, SCREEN_WIDTH / 2 - SCREEN_WIDTH / 10, SCREEN_HEIGHT * 0.5, SCREEN_WIDTH / 5, SCREEN_HEIGHT / 15, "white", "Options", (0, 0, 0))
         self.button_quit = Button(screen, SCREEN_WIDTH / 2 - SCREEN_WIDTH / 10, SCREEN_HEIGHT * 0.6, SCREEN_WIDTH / 5, SCREEN_HEIGHT / 15, "white", "Quitter", (0, 0, 0))
+        self.background = pygame.image.load("assets/Background2.jpg")
+        self.background = pygame.transform.scale(self.background,(self.screen.get_width(), self.screen.get_height()))
         self.buttons = [self.button_play,self.button_play_lan,self.button_option,self.button_quit]
         self.menu = "self"  # Initialize the menu variable
         self.action = None  # Initialize the action variable
@@ -15,7 +18,8 @@ class Menu:
         self.buttons.append(button)
 
     def load(self):
-        self.screen.fill("black")
+        self.screen.blit(self.background,(0,0))
+        #self.screen.fill("black")
         self.screen.blit(self.title, (self.screen.get_width() / 2 - self.title.get_width() / 2, 0))
         for button in self.buttons:
             button.draw()

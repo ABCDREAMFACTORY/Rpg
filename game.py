@@ -102,13 +102,13 @@ pygame.display.set_caption("Jeu python")
 gravity = 0.5
 ground = 600
 while running:
+    print("pos:",pygame.mouse.get_pos())
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
     
     if time.monotonic()-Player1.animage_time > Player1.animage_duree:
         Player1.animage_index = (Player1.animage_index+1)%Player1.animage_nb_image
-        print(Player1.animage_index)
         if Player1.animage_index == 0:
             Player1.animage_index = 1
 
