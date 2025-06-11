@@ -61,6 +61,8 @@ class Menu_game:
                 self.Player2.move_left()
             else:
                 self.Player2.stand()
+            if keys[pygame.K_ESCAPE]:
+                self.action = "Retour"
             self.Player1.Gravity(self.ground,self.gravity)
             self.Player2.Gravity(self.ground,self.gravity)
             #if Player1.animage_index >= Player1.animage_nb_image:
@@ -77,7 +79,7 @@ class player():
         self.player_frame = [pygame.transform.scale(frame,(200, 200)) for frame in self.player_frame]
         self.co_x = self.screen.get_width()/2
         self.co_y = 500
-        self.rect = self.player_frame[1].get_rect()
+        self.rect = pygame.Rect(self.co_x,self.co_y,100,175)
         self.score = 0
         self.speed = 5
 
@@ -99,23 +101,23 @@ class player():
     def draw(self):
 
 
-        self.rect = pygame.Rect(self.co_x,self.co_y,100,175)
         self.rect.center = self.co_x+100,self.co_y+100
         #pygame.draw.rect(self.screen,"White",self.rect)
         self.screen.blit(self.player_frame[self.animage_index],pygame.Rect(self.co_x,self.co_y,100,175))
     def move_left(self):
-        if self.co_x > self.rect.width:
+        if self.co_x > -50:
             self.co_x -= self.speed
+        else:
+            print(self.co_x,self.co_y)
         if self.current_animation != "runAnimLeft":
-            self.player_frame = extract_frames("assets/runAnim.gif")
-            self.player_frame = [pygame.transform.flip(frame, True, False) for frame in self.player_frame]
+            self.player_frame = [pygame.transform.flip(frame, True, False) for frame in extract_frames("assets/runAnim.gif")]
             self.animage_nb_image = len(self.player_frame)
             self.start_standing = True
             self.axis = "left"
             self.current_animation = "runAnimLeft"
 
     def move_right(self):
-        if self.co_x < self.screen.get_width()-self.player_frame[self.animage_index].get_width():
+        if self.co_x < self.screen.get_width()-self.player_frame[self.animage_index].get_width()+50:
             self.co_x += self.speed
         if self.current_animation != "runAnimRight":
             self.player_frame = extract_frames("assets/runAnim.gif")
